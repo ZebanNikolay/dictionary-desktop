@@ -1,8 +1,6 @@
 package com.ncbs.dictionary.presentation
 
-import com.ncbs.dictionary.data.WordsDataSourceImpl
 import tornadofx.*
-import javax.swing.text.View
 
 class MainScreen : View() {
 
@@ -10,18 +8,21 @@ class MainScreen : View() {
     private val topView = find(SearchView::class)
     private val centerView = find(WordDetailView::class)
 
+    private val viewModel = find(DictionaryViewModel::class)
+
     override val root = vbox {
         menubar {
             menu("Файл") {
                 item("Выход").action { close() }
             }
             menu("Язык") {
-                item("RU", "Русский")
-                item("EN", "Английский")
-                item("NV", "Нивхский")
+                viewModel.locales.forEach {
+                    item(it.language.toUpperCase()).action {
+                        viewModel.selectedLocale.value = it
+                    }
+                }
             }
         }
-
         borderpane {
             left = leftView.root
             top = topView.root
@@ -30,26 +31,50 @@ class MainScreen : View() {
     }
 }
 
-class WordsListView: View() {
+class WordsListView : View() {
 
-    private val words = WordsDataSourceImpl().getWords().map { it.locales.first().value }.observable()
+    private val viewModel = find(DictionaryViewModel::class)
 
-    override val root = listview(words) {
+    init {
+        viewModel.selectedLocale.onChange {
+            root.refresh()
+        }
+    }
+
+    override val root = listview(viewModel.words) {
+        cellFormat {
+            setText(viewModel.getTranslateBySelectedLocale(it) ?: return@cellFormat)
+        }
+        setOnMouseClicked {
+            selectedItem ?: return@setOnMouseClicked
+            viewModel.selectedWord.value = selectedItem
+        }
     }
 }
 
-class SearchView: View() {
+class SearchView : View() {
     override val root = hbox {
-        textfield{
+        textfield {
             promptText = "Поиск"
         }
         addClass(AppStylesheet.container)
     }
 }
 
-class WordDetailView: View() {
+class WordDetailView : View() {
+    private val viewModel = find(DictionaryViewModel::class)
+
+    private val titleWord = viewModel.selectedWord.stringBinding { viewModel.getTranslateBySelectedLocale(it)}
+
+    init {
+        //todo
+        viewModel.selectedLocale.onChange {
+            titleWord.invalidate()
+        }
+    }
+
     override val root = hbox {
-        label("WordDetailView")
+        text(titleWord)
         addClass(AppStylesheet.container)
     }
 }

@@ -1,6 +1,6 @@
 package com.ncbs.dictionary.data
 
-import com.ncbs.dictionary.domain.Locale
+import com.ncbs.dictionary.domain.LocaleData
 import com.ncbs.dictionary.domain.Word
 import com.opencsv.*
 import java.io.FileInputStream
@@ -25,9 +25,10 @@ class WordsDataSourceImpl : WordsDataSource {
         val lines = csvReader.readAll()
         val words = LinkedList<Word>()
         for (line in lines) {
-            val locales = linkedSetOf<Locale>()
+            val locales = hashMapOf<String, LocaleData>()
             for ((localeIndex, value) in line.drop(METADATA_COLUMN_COUNT).withIndex()) {
-                locales.add(Locale(localesCodes[localeIndex], value, null))
+                val languageCode = localesCodes[localeIndex]
+                locales[languageCode] = LocaleData(languageCode, value, null)
             }
             words.add(Word(line.first(), locales))
         }
