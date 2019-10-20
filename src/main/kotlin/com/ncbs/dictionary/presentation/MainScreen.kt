@@ -41,7 +41,7 @@ class WordsListView : View() {
         }
     }
 
-    override val root = listview(viewModel.words) {
+    override val root = listview(viewModel.filteredWords) {
         cellFormat {
             setText(viewModel.getTranslateBySelectedLocale(it) ?: return@cellFormat)
         }
@@ -53,9 +53,15 @@ class WordsListView : View() {
 }
 
 class SearchView : View() {
+
+    private val viewModel = find(DictionaryViewModel::class)
+
     override val root = hbox {
-        textfield {
+        textfield() {
             promptText = "Поиск"
+            textProperty().addListener { _, _, newValue ->
+                viewModel.onSearchQueryChanged(newValue)
+            }
         }
         addClass(AppStylesheet.container)
     }
