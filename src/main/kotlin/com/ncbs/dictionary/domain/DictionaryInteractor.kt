@@ -1,11 +1,8 @@
 package com.ncbs.dictionary.domain
 
-import java.util.*
-
 interface DictionaryInteractor {
 
     fun getWords(): List<Word>
-    fun getLocales(): List<Locale>
 }
 
 class DictionaryInteractorImpl(
@@ -14,7 +11,4 @@ class DictionaryInteractorImpl(
 
     override fun getWords(): List<Word> =
         repository.getWords()
-
-    override fun getLocales(): List<Locale> =
-        repository.getLocales()
 }

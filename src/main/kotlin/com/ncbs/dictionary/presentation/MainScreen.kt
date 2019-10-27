@@ -1,5 +1,6 @@
 package com.ncbs.dictionary.presentation
 
+import com.ncbs.dictionary.domain.Language
 import tornadofx.*
 
 class MainScreen : View() {
@@ -16,8 +17,8 @@ class MainScreen : View() {
                 item("Выход").action { close() }
             }
             menu("Язык") {
-                viewModel.locales.forEach {
-                    item(it.language.toUpperCase()).action {
+                Language.values().forEach {
+                    item(it.title).action {
                         viewModel.selectedLocale.value = it
                     }
                 }
@@ -70,17 +71,19 @@ class SearchView : View() {
 class WordDetailView : View() {
     private val viewModel = find(DictionaryViewModel::class)
 
-    private val titleWord = viewModel.selectedWord.stringBinding { viewModel.getTranslateBySelectedLocale(it)}
+    private val titleWord = viewModel.selectedWord.stringBinding { it?.getTranslate(Language.NIVKH.code) }
+    private val russianTranslate = viewModel.selectedWord.stringBinding { it?.getTranslate(Language.RUSSIAN.code) }
+    private val englishTranslate = viewModel.selectedWord.stringBinding { it?.getTranslate(Language.ENGLISH.code) }
 
-    init {
-        //todo
-        viewModel.selectedLocale.onChange {
-            titleWord.invalidate()
+    override val root = vbox {
+        hbox {
+            text(titleWord)
+            button("►")
         }
-    }
-
-    override val root = hbox {
-        text(titleWord)
+        vbox {
+            text(russianTranslate)
+            text(englishTranslate)
+        }
         addClass(AppStylesheet.container)
     }
 }
