@@ -5,10 +5,11 @@ import com.ncbs.dictionary.domain.Word
 import javafx.beans.property.Property
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ObservableList
+import javafx.scene.media.Media
+import javafx.scene.media.MediaPlayer
 import tornadofx.ViewModel
-import tornadofx.observable
 import tornadofx.observableList
-import java.util.*
+import tornadofx.onChange
 
 class DictionaryViewModel : ViewModel() {
 
@@ -18,6 +19,7 @@ class DictionaryViewModel : ViewModel() {
     val filteredWords: ObservableList<Word> = observableList()
 
     val selectedWord: Property<Word> = SimpleObjectProperty()
+    private var audio: MediaPlayer? = null
     val selectedLocale: Property<Language> = SimpleObjectProperty()
 
     init {
@@ -25,6 +27,11 @@ class DictionaryViewModel : ViewModel() {
         selectedLocale.value = Language.NIVKH
         onSearchQueryChanged()
         selectedWord.value = words.first()
+        selectedWord.onChange {
+            val path = it?.locales?.get(Language.NIVKH.code)?.audioPath
+            path ?: return@onChange
+            audio = MediaPlayer(Media(resources[path]))
+        }
     }
 
     fun getTranslateBySelectedLocale(word: Word?): String? {
@@ -38,5 +45,9 @@ class DictionaryViewModel : ViewModel() {
         filteredWords.addAll(words.filter {
             it.getTranslate(selectedLocale.value.code)?.contains(query, true) ?: false
         })
+    }
+
+    fun onPlay() {
+        audio?.play()
     }
 }

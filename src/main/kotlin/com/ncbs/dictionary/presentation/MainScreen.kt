@@ -78,7 +78,9 @@ class WordDetailView : View() {
     override val root = vbox {
         hbox {
             text(titleWord)
-            button("►")
+            button("►").action {
+                viewModel.onPlay()
+            }
         }
         vbox {
             text(russianTranslate)

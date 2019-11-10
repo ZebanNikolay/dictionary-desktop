@@ -1,7 +1,7 @@
 package com.ncbs.dictionary.domain
 
 data class LocaleData(
-    val languageCode: String,
+    val language: Language,
     val value: String,
-    val audioFileName: String?
+    val audioPath: String?
 )
