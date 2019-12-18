@@ -19,19 +19,19 @@ class DictionaryViewModel : ViewModel() {
     val filteredWords: ObservableList<Word> = observableList()
 
     val selectedWord: Property<Word> = SimpleObjectProperty()
-    private var audio: MediaPlayer? = null
+    private lateinit var audio: MediaPlayer
     val selectedLocale: Property<Language> = SimpleObjectProperty()
 
     init {
         words = interactor.getWords()
         selectedLocale.value = Language.NIVKH
         onSearchQueryChanged()
-        selectedWord.value = words.first()
         selectedWord.onChange {
             val path = it?.locales?.get(Language.NIVKH.code)?.audioPath
             path ?: return@onChange
             audio = MediaPlayer(Media(resources[path]))
         }
+        selectedWord.value = words.first()
     }
 
     fun getTranslateBySelectedLocale(word: Word?): String? {
@@ -48,6 +48,7 @@ class DictionaryViewModel : ViewModel() {
     }
 
     fun onPlay() {
-        audio?.play()
+        audio.stop()
+        audio.play()
     }
 }
