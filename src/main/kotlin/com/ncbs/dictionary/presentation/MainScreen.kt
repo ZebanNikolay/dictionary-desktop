@@ -1,33 +1,49 @@
 package com.ncbs.dictionary.presentation
 
 import com.ncbs.dictionary.domain.Language
+import javafx.geometry.Pos
+import javafx.scene.control.ToggleGroup
 import tornadofx.*
+
+private const val SPACING_SMALL = 8
+private const val SPACING_MEDIUM = 16
+private const val SPACING_LARGE = 32
 
 class MainScreen : View() {
 
-    private val leftView = find(WordsListView::class)
-    private val topView = find(SearchView::class)
-    private val centerView = find(WordDetailView::class)
+    private val listView = find(WordsListView::class)
+    private val detailView = find(WordDetailView::class)
+    private val menuBarView = find(MenuBarView::class)
+
+    override val root = vbox {
+
+        borderpane {
+            top = menuBarView.root
+            left = listView.root
+            center = detailView.root
+        }
+    }
+}
+
+class MenuBarView : View() {
 
     private val viewModel = find(DictionaryViewModel::class)
 
-    override val root = vbox {
-        menubar {
-            menu("Файл") {
-                item("Выход").action { close() }
-            }
-            menu("Язык") {
-                Language.values().forEach {
-                    item(it.title).action {
+    private val toggleGroup = ToggleGroup()
+
+    override val root = menubar {
+        menu("Файл") {
+            item("Выход").action { close() }
+        }
+        menu("Язык") {
+            Language.values().forEach {
+                radiomenuitem(it.title, toggleGroup) {
+                    isSelected = viewModel.selectedLocale.value == it
+                    action {
                         viewModel.selectedLocale.value = it
                     }
                 }
             }
-        }
-        borderpane {
-            left = leftView.root
-            top = topView.root
-            center = centerView.root
         }
     }
 }
@@ -36,13 +52,14 @@ class WordsListView : View() {
 
     private val viewModel = find(DictionaryViewModel::class)
 
-    init {
-        viewModel.selectedLocale.onChange {
-            root.refresh()
+    private val search = textfield() {
+        promptText = "Поиск"
+        textProperty().addListener { _, _, newValue ->
+            viewModel.onSearchQueryChanged(newValue)
         }
     }
 
-    override val root = listview(viewModel.filteredWords) {
+    private val list = listview(viewModel.filteredWords) {
         cellFormat {
             setText(viewModel.getTranslateBySelectedLocale(it) ?: return@cellFormat)
         }
@@ -50,21 +67,19 @@ class WordsListView : View() {
             selectedItem ?: return@setOnMouseClicked
             viewModel.selectedWord.value = selectedItem
         }
+        minHeight += 600
     }
-}
 
-class SearchView : View() {
+    override val root = vbox()
 
-    private val viewModel = find(DictionaryViewModel::class)
-
-    override val root = hbox {
-        textfield() {
-            promptText = "Поиск"
-            textProperty().addListener { _, _, newValue ->
-                viewModel.onSearchQueryChanged(newValue)
-            }
+    init {
+        with(root) {
+            this += search
+            this += list
         }
-        addClass(AppStylesheet.container)
+        viewModel.selectedLocale.onChange {
+            list.refresh()
+        }
     }
 }
 
@@ -77,15 +92,43 @@ class WordDetailView : View() {
 
     override val root = vbox {
         hbox {
-            text(titleWord)
-            button("►").action {
-                viewModel.onPlay()
+            label() {
+                textProperty().bind(titleWord)
+                paddingRight = SPACING_MEDIUM
+                addClass(AppStylesheet.title)
             }
+            button() {
+                action {
+                    viewModel.onPlay()
+                }
+                graphic = imageview(resources.image("/ic_play.png")).apply {
+                    fitHeight = SPACING_MEDIUM.toDouble()
+                    fitWidth = SPACING_MEDIUM.toDouble()
+                }
+            }
+            alignment = Pos.BASELINE_LEFT
         }
         vbox {
-            text(russianTranslate)
-            text(englishTranslate)
+            label("RU") {
+                paddingTop = SPACING_LARGE
+                addClass(AppStylesheet.subtitle)
+            }
+            label {
+                textProperty().bind(russianTranslate)
+                addClass(AppStylesheet.content)
+            }
+            label("EN") {
+                paddingTop = SPACING_MEDIUM
+                addClass(AppStylesheet.subtitle)
+            }
+            label {
+                textProperty().bind(englishTranslate)
+                addClass(AppStylesheet.content)
+            }
         }
-        addClass(AppStylesheet.container)
+        style {
+            padding = box(72.px)
+        }
+        minWidth += 600
     }
 }

@@ -31,11 +31,14 @@ fxlauncher {
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
     compile "no.tornado:tornadofx:$tornadofx_version"
     compile "com.opencsv:opencsv:$opencsv_version"
+
+    compile "org.jfxtras:jmetro:8.5.11"
 }
 
 jar {

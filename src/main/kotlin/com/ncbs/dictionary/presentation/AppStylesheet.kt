@@ -1,19 +1,26 @@
 package com.ncbs.dictionary.presentation
 
-import tornadofx.Stylesheet
-import tornadofx.box
-import tornadofx.cssclass
-import tornadofx.px
+import javafx.scene.text.FontPosture
+import tornadofx.*
 
 class AppStylesheet : Stylesheet() {
 
     companion object {
-        val container by cssclass()
+        val title by cssclass()
+        val subtitle by cssclass()
+        val content by cssclass()
     }
 
     init {
-        container {
-            padding = box(10.px)
+        title {
+            fontSize = 48.px
+        }
+        subtitle {
+            fontSize = 14.px
+            fontStyle = FontPosture.ITALIC
+        }
+        content {
+            fontSize = 18.px
         }
     }
 }
