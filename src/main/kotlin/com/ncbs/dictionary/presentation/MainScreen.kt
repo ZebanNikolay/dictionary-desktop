@@ -5,7 +5,6 @@ import javafx.geometry.Pos
 import javafx.scene.control.ToggleGroup
 import tornadofx.*
 
-private const val SPACING_SMALL = 8
 private const val SPACING_MEDIUM = 16
 private const val SPACING_LARGE = 32
 

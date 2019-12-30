@@ -24,9 +24,10 @@ class WordsDataSourceImpl : WordsDataSource {
     override fun getWords(): List<Word> {
         val csvReader = getCsvReader()
         val localesCodes = csvReader.readNext().drop(METADATA_COLUMN_COUNT)
-        val lines = csvReader.readAll()
         val words = LinkedList<Word>()
-        for (line in lines) {
+
+        while (true) {
+            val line = csvReader.readNext() ?: break
             val locales = hashMapOf<String, LocaleData>()
             for ((localeIndex, value) in line.drop(METADATA_COLUMN_COUNT).withIndex()) {
                 val language = Language.values().find { it.code == localesCodes[localeIndex] } ?: continue
@@ -39,6 +40,7 @@ class WordsDataSourceImpl : WordsDataSource {
             }
             words.add(Word(line.first(), locales))
         }
+
         csvReader.close()
         return words
     }
