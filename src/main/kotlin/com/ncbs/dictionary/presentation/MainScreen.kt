@@ -1,8 +1,10 @@
 package com.ncbs.dictionary.presentation
 
 import com.ncbs.dictionary.domain.Language
+import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.ToggleGroup
+import javafx.scene.layout.Priority
 import tornadofx.*
 
 private const val SPACING_MEDIUM = 16
@@ -14,9 +16,17 @@ class MainScreen : View() {
     private val detailView = find(WordDetailView::class)
     private val menuBarView = find(MenuBarView::class)
 
-    override val root = vbox {
+    init {
+        primaryStage.sizeToScene()
+        whenDocked {
+            primaryStage.width = 1024.0
+            primaryStage.height = 768.0
+        }
+    }
 
+    override val root = vbox {
         borderpane {
+            vgrow = Priority.ALWAYS
             top = menuBarView.root
             left = listView.root
             center = detailView.root
@@ -59,6 +69,7 @@ class WordsListView : View() {
     }
 
     private val list = listview(viewModel.filteredWords) {
+        vgrow = Priority.ALWAYS
         cellFormat {
             setText(viewModel.getTranslateBySelectedLocale(it) ?: return@cellFormat)
         }
@@ -66,7 +77,6 @@ class WordsListView : View() {
             selectedItem ?: return@setOnMouseClicked
             viewModel.selectedWord.value = selectedItem
         }
-        minHeight += 600
     }
 
     override val root = vbox()
@@ -90,22 +100,23 @@ class WordDetailView : View() {
     private val englishTranslate = viewModel.selectedWord.stringBinding { it?.getTranslate(Language.ENGLISH.code) }
 
     override val root = vbox {
-        hbox {
-            label() {
+        hbox(SPACING_MEDIUM) {
+            label {
                 textProperty().bind(titleWord)
-                paddingRight = SPACING_MEDIUM
                 addClass(AppStylesheet.title)
             }
-            button() {
+            button {
+                HBoxConstraint(this, Insets(18.0, 0.0, 0.0, 0.0))
+                    .applyToNode(this)
                 action {
                     viewModel.onPlay()
                 }
-                graphic = imageview(resources.image("/ic_play.png")).apply {
+                graphic = imageview("/ic_play.png") {
                     fitHeight = SPACING_MEDIUM.toDouble()
                     fitWidth = SPACING_MEDIUM.toDouble()
                 }
             }
-            alignment = Pos.BASELINE_LEFT
+            alignment = Pos.TOP_LEFT
         }
         vbox {
             label("RU") {
@@ -128,6 +139,5 @@ class WordDetailView : View() {
         style {
             padding = box(72.px)
         }
-        minWidth += 600
     }
 }
