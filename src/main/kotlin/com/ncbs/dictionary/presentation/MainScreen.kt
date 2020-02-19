@@ -17,10 +17,10 @@ class MainScreen : View() {
     private val menuBarView = find(MenuBarView::class)
 
     init {
-        primaryStage.sizeToScene()
         whenDocked {
             primaryStage.width = 1024.0
             primaryStage.height = 768.0
+            primaryStage.isResizable = true
         }
     }
 
@@ -108,6 +108,7 @@ class WordDetailView : View() {
             button {
                 HBoxConstraint(this, Insets(18.0, 0.0, 0.0, 0.0))
                     .applyToNode(this)
+                visibleWhen(viewModel.isPlayButtonVisible)
                 action {
                     viewModel.onPlay()
                 }

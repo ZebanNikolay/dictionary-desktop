@@ -3,6 +3,7 @@ package com.ncbs.dictionary.presentation
 import com.ncbs.dictionary.domain.Language
 import com.ncbs.dictionary.domain.Word
 import javafx.beans.property.Property
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ObservableList
 import javafx.scene.media.Media
@@ -19,7 +20,8 @@ class DictionaryViewModel : ViewModel() {
     val filteredWords: ObservableList<Word> = observableList()
 
     val selectedWord: Property<Word> = SimpleObjectProperty()
-    private lateinit var audio: MediaPlayer
+    private var audio: MediaPlayer? = null
+    val isPlayButtonVisible: Property<Boolean> = SimpleBooleanProperty(false)
     val selectedLocale: Property<Language> = SimpleObjectProperty()
 
     init {
@@ -28,8 +30,14 @@ class DictionaryViewModel : ViewModel() {
         onSearchQueryChanged()
         selectedWord.onChange {
             val path = it?.locales?.get(Language.NIVKH.code)?.audioPath
-            path ?: return@onChange
-            audio = MediaPlayer(Media(resources[path]))
+            val url = javaClass.getResource(path)
+            if (url == null) {
+                audio = null
+                isPlayButtonVisible.value = false
+                return@onChange
+            }
+            isPlayButtonVisible.value = true
+            audio = MediaPlayer(Media(url.toExternalForm()))
         }
         selectedWord.value = words.first()
     }
@@ -48,7 +56,7 @@ class DictionaryViewModel : ViewModel() {
     }
 
     fun onPlay() {
-        audio.stop()
-        audio.play()
+        audio?.stop()
+        audio?.play()
     }
 }
