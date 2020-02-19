@@ -16,6 +16,7 @@ class OnBoardingScreen : View() {
         whenDocked {
             primaryStage.height = backgroundImage.height + (primaryStage.height - primaryStage.scene.height)
             primaryStage.isResizable = false
+            primaryStage.icons.add(resources.image("/ic_launch.png"))
         }
     }
 
