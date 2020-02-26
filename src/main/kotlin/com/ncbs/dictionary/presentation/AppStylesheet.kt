@@ -9,6 +9,7 @@ class AppStylesheet : Stylesheet() {
         val title by cssclass()
         val subtitle by cssclass()
         val content by cssclass()
+        val onBoardingButtonHover by csspseudoclass()
     }
 
     init {
@@ -21,6 +22,11 @@ class AppStylesheet : Stylesheet() {
         }
         content {
             fontSize = 18.px
+        }
+        onBoardingButtonHover {
+            and(hover) {
+                borderRadius = multi(box(24.px))
+            }
         }
     }
 }

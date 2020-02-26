@@ -1,7 +1,7 @@
 package com.ncbs.dictionary.presentation
 
-import javafx.geometry.Insets
 import javafx.geometry.Pos
+import javafx.scene.control.ContentDisplay
 import javafx.scene.control.TabPane
 import javafx.scene.layout.Background
 import tornadofx.*
@@ -34,13 +34,23 @@ class OnBoardingScreen : View() {
                     imageview(onboardingImage)
                 }
             }
-            button("Начать") {
-                padding = Insets(10.0, 16.0, 10.0, 16.0)
+            button("Аудиословать") {
                 action {
                     this@OnBoardingScreen.replaceWith(
                         MainScreen::class
                     )
                 }
+                graphic = imageview("/ornament.png") {
+                    fitHeight = 24.toDouble()
+                    fitWidth = 120.toDouble()
+                }
+                style {
+                    fontSize = 18.px
+                    backgroundRadius = multi(box(24.px))
+                    padding = box(10.px, 16.px)
+                    contentDisplay = ContentDisplay.BOTTOM
+                }
+                addClass(AppStylesheet.onBoardingButtonHover)
             }
         }
     }
