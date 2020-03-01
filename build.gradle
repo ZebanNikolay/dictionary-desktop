@@ -20,6 +20,7 @@ apply plugin: 'no.tornado.fxlauncher'
 mainClassName = 'com.ncbs.dictionary.DictionaryApp'
 
 fxlauncher {
+    javapackagerOptions = ["-Bicon=package/windows/Dictionary.ico"]
     applicationVendor 'NCBS'
     // Base URL where you will host the application artifacts
     applicationUrl 'https://dictionary-f4cbd.firebaseapp.com/'
