@@ -10,6 +10,7 @@ import javafx.scene.media.Media
 import javafx.scene.media.MediaPlayer
 import tornadofx.ViewModel
 import tornadofx.observableList
+import tornadofx.observableListOf
 import tornadofx.onChange
 
 class DictionaryViewModel : ViewModel() {
@@ -17,7 +18,7 @@ class DictionaryViewModel : ViewModel() {
     private val interactor = DictionaryInteractorFactory().provideInteractor()
 
     private val words: List<Word>
-    val filteredWords: ObservableList<Word> = observableList()
+    val filteredWords: ObservableList<Word> = observableListOf()
 
     val selectedWord: Property<Word> = SimpleObjectProperty()
     private var audio: MediaPlayer? = null
@@ -30,7 +31,7 @@ class DictionaryViewModel : ViewModel() {
         onSearchQueryChanged()
         selectedWord.onChange {
             val path = it?.locales?.get(Language.NIVKH.code)?.audioPath
-            val url = javaClass.getResource(path)
+            val url = javaClass.getResource(path ?: return@onChange)
             if (url == null) {
                 audio = null
                 isPlayButtonVisible.value = false
