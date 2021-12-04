@@ -7,9 +7,6 @@ import javafx.scene.control.ToggleGroup
 import javafx.scene.layout.Priority
 import tornadofx.*
 
-private const val SPACING_MEDIUM = 16
-private const val SPACING_LARGE = 32
-
 class MainScreen : View() {
 
     private val listView = find(WordsListView::class)
@@ -103,7 +100,7 @@ class WordDetailView : View() {
         hbox(SPACING_MEDIUM) {
             label {
                 textProperty().bind(titleWord)
-                addClass(AppStylesheet.title)
+                addClass(AppStylesheet.h1)
             }
             button {
                 HBoxConstraint(this, Insets(18.0, 0.0, 0.0, 0.0))
