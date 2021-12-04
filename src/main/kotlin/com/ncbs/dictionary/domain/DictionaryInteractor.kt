@@ -1,14 +1,12 @@
 package com.ncbs.dictionary.domain
 
-interface DictionaryInteractor {
+import com.ncbs.dictionary.data.DictionaryRepository
 
-    fun getWords(): List<Word>
-}
-
-class DictionaryInteractorImpl(
+class DictionaryInteractor(
     private val repository: DictionaryRepository
-) : DictionaryInteractor {
+) {
 
-    override fun getWords(): List<Word> =
-        repository.getWords()
+    suspend fun getWords(): List<Word> = repository.getWords()
+
+    fun hasWordsData(): Boolean = repository.hasWordsData()
 }

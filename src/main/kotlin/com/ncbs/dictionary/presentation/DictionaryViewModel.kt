@@ -8,6 +8,10 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ObservableList
 import javafx.scene.media.Media
 import javafx.scene.media.MediaPlayer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.javafx.JavaFx
+import kotlinx.coroutines.launch
 import tornadofx.ViewModel
 import tornadofx.observableList
 import tornadofx.observableListOf
@@ -17,7 +21,7 @@ class DictionaryViewModel : ViewModel() {
 
     private val interactor = DictionaryInteractorFactory().provideInteractor()
 
-    private val words: List<Word>
+    private lateinit var words: List<Word>
     val filteredWords: ObservableList<Word> = observableListOf()
 
     val selectedWord: Property<Word> = SimpleObjectProperty()
@@ -26,9 +30,7 @@ class DictionaryViewModel : ViewModel() {
     val selectedLocale: Property<Language> = SimpleObjectProperty()
 
     init {
-        words = interactor.getWords()
         selectedLocale.value = Language.NIVKH
-        onSearchQueryChanged()
         selectedWord.onChange {
             val path = it?.locales?.get(Language.NIVKH.code)?.audioPath
             val url = javaClass.getResource(path ?: return@onChange)
@@ -40,7 +42,18 @@ class DictionaryViewModel : ViewModel() {
             isPlayButtonVisible.value = true
             audio = MediaPlayer(Media(url.toExternalForm()))
         }
-        selectedWord.value = words.first()
+        // TODO: 20/11/2021
+
+        GlobalScope.launch(Dispatchers.JavaFx) {
+            try {
+                words = interactor.getWords()
+                onSearchQueryChanged()
+                selectedWord.value = words.first()
+            } catch (e: Exception) {
+                // TODO: 29/11/2021 show error
+                throw e
+            }
+        }
     }
 
     fun getTranslateBySelectedLocale(word: Word?): String? {

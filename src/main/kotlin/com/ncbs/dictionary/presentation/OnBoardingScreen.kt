@@ -8,6 +8,8 @@ import tornadofx.*
 
 class OnBoardingScreen : View() {
 
+    private val viewModel = find(OnBoardingViewModel::class)
+
     private val backgroundImage = resources.image("/onboarding_background.jpg")
     private val aboutImage = resources.image("/about_text.jpg")
     private val onboardingImage = resources.image("/onboarding_text.jpg")
@@ -36,9 +38,7 @@ class OnBoardingScreen : View() {
             }
             button("Аудиословать") {
                 action {
-                    this@OnBoardingScreen.replaceWith(
-                        MainScreen::class
-                    )
+                    viewModel.onEnterButtonClicked(this@OnBoardingScreen)
                 }
                 graphic = imageview("/ornament.png") {
                     fitHeight = 24.toDouble()
