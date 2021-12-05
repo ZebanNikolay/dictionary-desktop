@@ -4,6 +4,7 @@ import com.ncbs.dictionary.domain.Language
 import com.ncbs.dictionary.domain.LocaleData
 import com.ncbs.dictionary.domain.Word
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -40,6 +41,7 @@ class DictionaryRepository {
     }
 
     suspend fun updateWords(): List<Word> = suspendCoroutine { continuation ->
+        throw IllegalStateException("Test")
         log.info("Start update words from server url = $WORDS_FILE_URL")
         val request = Request.Builder()
             .url(WORDS_FILE_URL)

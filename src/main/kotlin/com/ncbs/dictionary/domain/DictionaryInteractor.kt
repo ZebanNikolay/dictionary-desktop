@@ -8,5 +8,7 @@ class DictionaryInteractor(
 
     suspend fun getWords(): List<Word> = repository.getWords()
 
+    suspend fun updateWords(): List<Word> = repository.updateWords()
+
     fun hasWordsData(): Boolean = repository.hasWordsData()
 }
