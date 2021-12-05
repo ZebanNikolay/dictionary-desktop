@@ -26,7 +26,6 @@ class DictionaryViewModel : ViewModel() {
 
     val selectedWord: Property<Word> = SimpleObjectProperty()
     private var audio: MediaPlayer? = null
-    val isPlayButtonVisible: Property<Boolean> = SimpleBooleanProperty(false)
     val selectedLocale: Property<Language> = SimpleObjectProperty()
 
     init {
@@ -36,15 +35,13 @@ class DictionaryViewModel : ViewModel() {
             val url = javaClass.getResource(path ?: return@onChange)
             if (url == null) {
                 audio = null
-                isPlayButtonVisible.value = false
                 return@onChange
             }
-            isPlayButtonVisible.value = true
-            audio = MediaPlayer(Media(url.toExternalForm()))
+            audio = MediaPlayer(Media("https://dictionary-f4cbd.firebaseapp.com/data/media/$url"))
         }
         // TODO: 20/11/2021
 
-        GlobalScope.launch(Dispatchers.JavaFx) {
+        GlobalScope.launch(Dispatchers.Main) {
             try {
                 words = interactor.getWords()
                 onSearchQueryChanged()

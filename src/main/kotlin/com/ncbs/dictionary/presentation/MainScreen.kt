@@ -105,7 +105,6 @@ class WordDetailView : View() {
             button {
                 HBoxConstraint(this, Insets(18.0, 0.0, 0.0, 0.0))
                     .applyToNode(this)
-                visibleWhen(viewModel.isPlayButtonVisible)
                 action {
                     viewModel.onPlay()
                 }

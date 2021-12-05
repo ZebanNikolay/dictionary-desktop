@@ -9,7 +9,7 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'no.tornado:fxlauncher-gradle-plugin:1.0.20'
+        classpath 'no.tornado:fxlauncher-gradle-plugin:1.0.21'
     }
 }
 
