@@ -1,6 +1,7 @@
 package com.ncbs.dictionary.presentation
 
 import com.ncbs.dictionary.domain.Language
+import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.ToggleGroup
@@ -105,6 +106,7 @@ class WordDetailView : View() {
             button {
                 HBoxConstraint(this, Insets(18.0, 0.0, 0.0, 0.0))
                     .applyToNode(this)
+                visibleWhen(viewModel.isPlayButtonVisible)
                 action {
                     viewModel.onPlay()
                 }
@@ -135,6 +137,23 @@ class WordDetailView : View() {
         }
         style {
             padding = box(72.px)
+        }
+    }
+}
+
+class ErrorDialog: Fragment() {
+    override val root = vbox(alignment = Pos.CENTER) {
+        label("Произошла ошибка!") {
+            addClass(AppStylesheet.h2)
+            paddingBottom = SPACING_LARGE
+        }
+        button("OK") {
+            action {
+                this@ErrorDialog.close()
+            }
+        }
+        style {
+            padding = box(SPACING_LARGE.px)
         }
     }
 }

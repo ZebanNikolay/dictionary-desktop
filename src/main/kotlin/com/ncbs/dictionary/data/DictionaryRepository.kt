@@ -1,7 +1,6 @@
 package com.ncbs.dictionary.data
 
 import com.ncbs.dictionary.domain.Word
-import javafx.scene.media.Media
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.withContext
@@ -11,11 +10,11 @@ import okhttp3.*
 import tornadofx.FX.Companion.log
 import java.io.File
 import java.io.IOException
-import java.util.*
 import kotlin.coroutines.suspendCoroutine
 
+const val HOST_URL = "https://dictionary-f4cbd.firebaseapp.com/data"
 private const val WORDS_FILE_NAME = "words.json"
-private const val WORDS_FILE_URL = "https://dictionary-f4cbd.firebaseapp.com/data/words.json"
+private const val WORDS_FILE_URL = "$HOST_URL/$WORDS_FILE_NAME"
 
 class DictionaryRepository {
 
@@ -72,40 +71,4 @@ class DictionaryRepository {
     }
 
     fun hasWordsData(): Boolean = File(WORDS_FILE_NAME).exists()
-
-    suspend fun getMedia(path: String): Media = withContext(Dispatchers.JavaFx) {
-        log.info("Start read media from [$path]")
-        val file = File(path)
-        return@withContext if (file.exists()) {
-            log.info("Read [$path] successfully")
-            Media(path)
-        } else {
-            log.info("[$path] isn't exist")
-            fetchMedia()
-        }
-    }
-
-    private suspend fun fetchMedia(): Media = suspendCoroutine { continuation ->
-        log.info("Start update words from server url = $WORDS_FILE_URL")
-        val request = Request.Builder()
-            .url(WORDS_FILE_URL)
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                log.info("Fetch words from server successfully")
-
-                e.printStackTrace()
-                continuation.resumeWith(Result.failure(e))
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (!response.isSuccessful) throw IOException("Unexpected code $response")
-                log.info("Fetch words from server successfully")
-                val string = response.body!!.string()
-                writeWordsToFile(string)
-                continuation.resumeWith(Result.success(Json.decodeFromString(string)))
-            }
-        })
-    }
 }

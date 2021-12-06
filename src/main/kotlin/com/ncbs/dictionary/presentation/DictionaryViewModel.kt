@@ -1,5 +1,6 @@
 package com.ncbs.dictionary.presentation
 
+import com.ncbs.dictionary.data.HOST_URL
 import com.ncbs.dictionary.domain.Language
 import com.ncbs.dictionary.domain.Word
 import javafx.beans.property.Property
@@ -8,12 +9,11 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ObservableList
 import javafx.scene.media.Media
 import javafx.scene.media.MediaPlayer
+import javafx.stage.StageStyle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
 import tornadofx.ViewModel
-import tornadofx.observableList
 import tornadofx.observableListOf
 import tornadofx.onChange
 
@@ -26,20 +26,16 @@ class DictionaryViewModel : ViewModel() {
 
     val selectedWord: Property<Word> = SimpleObjectProperty()
     private var audio: MediaPlayer? = null
+    val isPlayButtonVisible: Property<Boolean> = SimpleBooleanProperty(false)
     val selectedLocale: Property<Language> = SimpleObjectProperty()
 
     init {
         selectedLocale.value = Language.NIVKH
         selectedWord.onChange {
             val path = it?.locales?.get(Language.NIVKH.code)?.audioPath
-            val url = javaClass.getResource(path ?: return@onChange)
-            if (url == null) {
-                audio = null
-                return@onChange
-            }
-            audio = MediaPlayer(Media("https://dictionary-f4cbd.firebaseapp.com/data/media/$url"))
+            isPlayButtonVisible.value = path != null
+            audio = MediaPlayer(Media("$HOST_URL$path"))
         }
-        // TODO: 20/11/2021
 
         GlobalScope.launch(Dispatchers.Main) {
             try {
@@ -47,8 +43,7 @@ class DictionaryViewModel : ViewModel() {
                 onSearchQueryChanged()
                 selectedWord.value = words.first()
             } catch (e: Exception) {
-                // TODO: 29/11/2021 show error
-                throw e
+                find<ErrorDialog>().openModal(stageStyle = StageStyle.UTILITY)
             }
         }
     }
